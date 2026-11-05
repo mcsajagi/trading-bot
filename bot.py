@@ -80,8 +80,10 @@ The bot applies a **15-period Simple Moving Average (SMA) momentum crossover** o
 
 ## Live Benchmark Results
 
-- Run Timestamp: {timestamp_str}
-- Execution Status: {len(trades)} completed trades - Final Position: 0 BTC (Flat)
+- Run Timestamp: 
+{timestamp_str}
+- Execution Status: 
+{len(trades)} completed trades - Final Position: 0 BTC (Flat)
 
 ```text
 === TRADING SESSION RESULTS ===
@@ -109,6 +111,55 @@ python bot.py
     with open("README.md", "w", encoding="utf-8") as f:
         f.write(readme_content)
     print("\n[INFO] README.md generated successfully with live data!")
+
+    # --- Automatikus HTML generálás (index.html) ---
+    html_trades_items = "".join([f"<li>{t}</li>" for t in trades_log_text.split('\n') if t])
+    html_content = f"""<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Bitcoin Paper-Trading Bot Report</title>
+    <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; }}
+        .card {{ background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }}
+        pre {{ background: #f1f1f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; }}
+        .notice {{ background: #eef2ff; border-left: 4px solid #6366f1; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: 500; color: #3730a3; }}
+        h1, h2 {{ color: #111827; }}
+        ul {{ line-height: 1.6; }}
+    </style>
+</head>
+<body>
+    <div class="notice">
+        ℹ️ <strong>Megjegyzés:</strong> Ez a vizuális jelentés és az itt látható adatok a projekt <code>README.md</code> fájljában is benne vannak!
+    </div>
+    
+    <div class="card">
+        <h1>Bitcoin Paper-Trading Bot (24h Replay)</h1>
+        <p><strong>Run Timestamp:</strong> {timestamp_str}</p>
+        <p><strong>Execution Status:</strong> {len(trades)} completed trades - Final Position: 0 BTC (Flat)</p>
+    </div>
+
+    <div class="card">
+        <h2>Trading Session Results</h2>
+        <ul>
+            <li><strong>Total Trades Executed:</strong> {len(trades)}</li>
+            <li><strong>Initial Starting Cash:</strong> ${initial_cash:,.2f}</li>
+            <li><strong>Final Balance:</strong> ${final_balance:,.2f}</li>
+            <li><strong>Net Profit / Loss:</strong> ${profit_usd:,.2f} ({profit_pct:.2f}%)</li>
+            <li><strong>Buy-and-Hold PnL:</strong> ${bah_profit:,.2f}</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Detailed Trade Log</h2>
+        <pre>{trades_log_text}</pre>
+    </div>
+</body>
+</html>
+"""
+    with open("index.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print("\n[INFO] index.html generated successfully alongside README.md!")
 
 def run_bot():
     print("Fetching 24-hour market data from Binance API...")
