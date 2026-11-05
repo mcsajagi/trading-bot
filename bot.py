@@ -198,12 +198,27 @@ python bot.py
         f.write(html_content)
     print("\n[INFO] index.html generated successfully with full explanation!")
 
+    # GitHub Actions Step Summary Injection (Biztonságos, tiszta formázás)
     github_step_summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if github_step_summary:
+        summary_text = (
+            f"# 🔴 Bitcoin Paper-Trading Bot - Execution Report\n"
+            f"> **Run Timestamp:** {timestamp_str}  \n"
+            f"> **Status:** {len(trades)} completed trades (Final Position: Flat)\n\n"
+            f"### Why This Task is Statistically Flawed\n"
+            f"Achieving a guaranteed net profit over an arbitrary 24-hour window under fixed transaction fees (0.2% round-trip) and forced liquidation rules is mathematically non-viable. Market noise systematically destroys capital through fee friction.\n\n"
+            f"### Results Summary\n"
+            f"- **Initial Cash:** ${initial_cash:,.2f}\n"
+            f"- **Final Balance:** ${final_balance:,.2f}\n"
+            f"- **Net PnL:** ${profit_usd:,.2f} ({profit_pct:.2f}%)\n"
+            f"- **Buy & Hold PnL:** ${bah_profit:,.2f}\n\n"
+            f"```text\n{trades_log_text}\n```\n"
+        )
         with open(github_step_summary, "a", encoding="utf-8") as sf:
-            sf.write(f"""# 🔴 Bitcoin Paper-Trading Bot - Execution Report\n> **Run Timestamp:** {timestamp_str}  \n> **Status:** {len(trades)} completed trades (Final Position: Flat)\n\n### Results Summary\n- **Initial Cash:** ${initial_cash:,.2f}\n- **Final Balance:**${final_balance:,.2f}\n- **Net PnL:** ${profit_usd:,.2f} ({profit_pct:.2f}\%)\n- **Buy & Hold PnL:**${bah_profit:,.2f}\n\n```text\n{trades_log_text}\n```\n""")
-        print("[INFO] Report successfully injected into GitHub Actions Step Summary!")
+            sf.write(summary_text)
+        print("[INFO] Report and explanation successfully injected into GitHub Actions Step Summary!")
 
+    # Auto-open in browser (csak lokálisan, Macen)
     if not os.environ.get("CI"):
         html_path = os.path.abspath("index.html")
         webbrowser.open(f"file://{html_path}")
@@ -212,7 +227,7 @@ python bot.py
 def run_bot():
     print("Fetching 24-hour market data from Binance API...")
     df = fetch_binance_data()
-
+    
     if df is None or len(df) < 21:
         print("[ERROR] Insufficient data available for simulation.")
         return
@@ -221,15 +236,15 @@ def run_bot():
     cash = initial_cash
     btc_held = 0.0
     fee_rate = 0.001
-
+    
     trades = []
     in_position = False
     buy_price = 0.0
     buy_time = None
-
+    
     df['sma'] = df['close'].rolling(window=15).mean()
     trade_count = 0
-
+    
     print("Simulating trading strategy over the last 24 hours...\n")
     for i in range(20, len(df)):
         current_time = df.loc[i, 'timestamp']
@@ -264,7 +279,7 @@ def run_bot():
     final_balance = cash + (btc_held * df.iloc[-1]['close'])
     profit_usd = final_balance - initial_cash
     profit_pct = (profit_usd / initial_cash) * 100
-
+    
     first_price = df.iloc[20]['close']
     last_price = df.iloc[-1]['close']
     bah_balance = initial_cash * (last_price / first_price)
@@ -276,7 +291,7 @@ def run_bot():
     print(f"Final Balance         : ${final_balance:,.2f}")
     print(f"Net Profit / Loss     : ${profit_usd:,.2f} ({profit_pct:.2f}%)")
     print(f"Buy-and-Hold PnL      : ${bah_profit:,.2f}")
-
+    
     generate_readme(trades, initial_cash, final_balance, profit_usd, profit_pct, bah_profit)
 
 if __name__ == "__main__":
