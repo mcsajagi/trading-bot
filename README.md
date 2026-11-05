@@ -1,5 +1,7 @@
 # Bitcoin Paper-Trading Bot (24h Replay)
 
+> 🔴 **CRITICAL NOTICE:** This documentation, benchmark metrics, and execution details are fully mirrored and duplicated inside the accompanying `index.html` visual report file.
+
 ## Executive Summary: Why This Task is Statistically Flawed
 
 While the bot executed successfully according to all technical parameters (fetching real-time data, fulfilling trade counts, and liquidating to flat), **achieving a guaranteed net profit over an arbitrary 24-hour window under these constraints is mathematically non-viable**.
@@ -34,26 +36,28 @@ The bot applies a **15-period Simple Moving Average (SMA) momentum crossover** o
 
 ## Live Benchmark Results
 
-- Run Timestamp: 2026-11-05 16:42:26
-- Execution Status: 8 completed trades - Final Position: 0 BTC (Flat)
+- Run Timestamp: 
+2026-11-05 18:52:04
+- Execution Status: 
+8 completed trades - Final Position: 0 BTC (Flat)
 
 ```text
 === TRADING SESSION RESULTS ===
 Total Trades Executed : 8
 Initial Starting Cash : $10,000.00
-Final Balance         : $9,829.29
-Net Profit / Loss     : $-170.71 (-1.71%)
-Buy-and-Hold PnL      : $-503.58
+Final Balance         : $9,854.14
+Net Profit / Loss     : $-145.86 (-1.46%)
+Buy-and-Hold PnL      : $-574.95
 
 === DETAILED TRADE LOG ===
-Trade #01 - Buy: 2026-11-04 23:25:00 @ $80521.59 -> Sell: 2026-11-04 23:29:00 @ $80478.85 (PnL:$-25.28)
-Trade #02 - Buy: 2026-11-04 23:30:00 @ $80502.00 -> Sell: 2026-11-04 23:31:00 @ $80486.37 (PnL:$-21.86)
-Trade #03 - Buy: 2026-11-04 23:34:00 @ $80537.11 -> Sell: 2026-11-04 23:50:00 @ $80576.20 (PnL:$-15.06)
-Trade #04 - Buy: 2026-11-05 00:00:00 @ $80580.89 -> Sell: 2026-11-05 00:01:00 @ $80550.00 (PnL:$-23.66)
-Trade #05 - Buy: 2026-11-05 00:04:00 @ $80623.76 -> Sell: 2026-11-05 00:07:00 @ $80539.99 (PnL:$-30.09)
-Trade #06 - Buy: 2026-11-05 00:08:00 @ $80577.73 -> Sell: 2026-11-05 00:26:00 @ $80693.57 (PnL:$-5.57)
-Trade #07 - Buy: 2026-11-05 00:30:00 @ $80767.21 -> Sell: 2026-11-05 00:32:00 @ $80700.90 (PnL:$-27.83)
-Trade #08 - Buy: 2026-11-05 00:33:00 @ $80723.84 -> Sell: 2026-11-05 00:34:00 @ $80710.67 (PnL:$-21.29)
+Trade #01 | Buy: 2026-11-05 01:33:00 @ $80540.01 -> Sell: 2026-11-05 01:55:00 @ $80744.11 (PnL:$5.31)
+Trade #02 | Buy: 2026-11-05 02:04:00 @ $80812.01 -> Sell: 2026-11-05 02:13:00 @ $80759.08 (PnL:$-26.53)
+Trade #03 | Buy: 2026-11-05 02:25:00 @ $80748.00 -> Sell: 2026-11-05 02:26:00 @ $80727.15 (PnL:$-22.51)
+Trade #04 | Buy: 2026-11-05 02:41:00 @ $80642.01 -> Sell: 2026-11-05 02:42:00 @ $80614.19 (PnL:$-23.32)
+Trade #05 | Buy: 2026-11-05 02:44:00 @ $80644.00 -> Sell: 2026-11-05 02:49:00 @ $80618.01 (PnL:$-23.04)
+Trade #06 | Buy: 2026-11-05 03:02:00 @ $80584.01 -> Sell: 2026-11-05 03:05:00 @ $80568.01 (PnL:$-21.76)
+Trade #07 | Buy: 2026-11-05 03:06:00 @ $80634.00 -> Sell: 2026-11-05 03:07:00 @ $80565.41 (PnL:$-28.15)
+Trade #08 | Buy: 2026-11-05 03:13:00 @ $80578.01 -> Sell: 2026-11-05 03:26:00 @ $80692.01 (PnL:$-5.78)
 ```
 
 ---

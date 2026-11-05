@@ -46,6 +46,8 @@ def generate_readme(trades, initial_cash, final_balance, profit_usd, profit_pct,
 
     readme_content = f"""# Bitcoin Paper-Trading Bot (24h Replay)
 
+> 🔴 **CRITICAL NOTICE:** This documentation, benchmark metrics, and execution details are fully mirrored and duplicated inside the accompanying `index.html` visual report file.
+
 ## Executive Summary: Why This Task is Statistically Flawed
 
 While the bot executed successfully according to all technical parameters (fetching real-time data, fulfilling trade counts, and liquidating to flat), **achieving a guaranteed net profit over an arbitrary 24-hour window under these constraints is mathematically non-viable**.
@@ -112,9 +114,9 @@ python bot.py
         f.write(readme_content)
     print("\n[INFO] README.md generated successfully!")
 
-    # --- HTML generálás (biztonságos sablonnal + piros figyelmeztetéssel) ---
+    # --- HTML generation (with red alert banner and English text) ---
     html_template = """<!DOCTYPE html>
-<html lang="hu">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Bitcoin Paper-Trading Bot Report</title>
@@ -129,7 +131,7 @@ python bot.py
 </head>
 <body>
     <div class="notice">
-        🔴 <strong>Megjegyzés:</strong> Ez a vizuális jelentés és az itt látható adatok a projekt <code>README.md</code> fájljában is benne vannak!
+        🔴 <strong>Notice:</strong> This visual report and all metrics shown here are fully mirrored from the project's <code>README.md</code> file!
     </div>
     
     <div class="card">
@@ -170,7 +172,7 @@ python bot.py
         f.write(html_content)
     print("\n[INFO] index.html generated successfully!")
 
-    # --- Automatikus megnyitás futás közben ---
+    # --- Auto-open in browser ---
     html_path = os.path.abspath("index.html")
     webbrowser.open(f"file://{html_path}")
     print("[INFO] index.html opened automatically in your default browser!")
