@@ -2,6 +2,8 @@ import time
 import requests
 import pandas as pd
 import numpy as np
+import webbrowser
+import os
 from datetime import datetime, timedelta
 
 def fetch_binance_data():
@@ -10,7 +12,6 @@ def fetch_binance_data():
         response = requests.get(url, timeout=10)
         data = response.json()
         
-        # Ha a Binance hibaüzenetet ad vissza (pl. listák helyett dict érkezik) vagy üres
         if not isinstance(data, list) or len(data) == 0:
             print(f"[WARNING] Binance API returned non-list or empty response: {data}")
             raise ValueError("Invalid or empty data from Binance")
@@ -25,7 +26,6 @@ def fetch_binance_data():
         return df[['timestamp', 'close']]
     except Exception as e:
         print(f"[WARNING] Fallback to simulated data due to API error: {e}")
-        # Fallback dummy adatok, ha a GitHub Actions IP-t blokkolja a Binance
         now = datetime.now() - timedelta(hours=24)
         timestamps = [now + timedelta(minutes=i) for i in range(1440)]
         np.random.seed(42)
@@ -110,56 +110,70 @@ python bot.py
 
     with open("README.md", "w", encoding="utf-8") as f:
         f.write(readme_content)
-    print("\n[INFO] README.md generated successfully with live data!")
+    print("\n[INFO] README.md generated successfully!")
 
-    # --- Automatikus HTML generálás (index.html) ---
-    html_trades_items = "".join([f"<li>{t}</li>" for t in trades_log_text.split('\n') if t])
-    html_content = f"""<!DOCTYPE html>
+    # --- HTML generálás (biztonságos sablonnal + piros figyelmeztetéssel) ---
+    html_template = """<!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
     <title>Bitcoin Paper-Trading Bot Report</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; }}
-        .card {{ background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }}
-        pre {{ background: #f1f1f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; }}
-        .notice {{ background: #eef2ff; border-left: 4px solid #6366f1; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: 500; color: #3730a3; }}
-        h1, h2 {{ color: #111827; }}
-        ul {{ line-height: 1.6; }}
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; }
+        .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        pre { background: #f1f1f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
+        .notice { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: 500; color: #991b1b; }
+        h1, h2 { color: #111827; }
+        ul { line-height: 1.6; }
     </style>
 </head>
 <body>
     <div class="notice">
-        ℹ️ <strong>Megjegyzés:</strong> Ez a vizuális jelentés és az itt látható adatok a projekt <code>README.md</code> fájljában is benne vannak!
+        🔴 <strong>Megjegyzés:</strong> Ez a vizuális jelentés és az itt látható adatok a projekt <code>README.md</code> fájljában is benne vannak!
     </div>
     
     <div class="card">
         <h1>Bitcoin Paper-Trading Bot (24h Replay)</h1>
-        <p><strong>Run Timestamp:</strong> {timestamp_str}</p>
-        <p><strong>Execution Status:</strong> {len(trades)} completed trades - Final Position: 0 BTC (Flat)</p>
+        <p><strong>Run Timestamp:</strong> TIMESTAMP_VAL</p>
+        <p><strong>Execution Status:</strong> TRADES_COUNT completed trades - Final Position: 0 BTC (Flat)</p>
     </div>
 
     <div class="card">
         <h2>Trading Session Results</h2>
         <ul>
-            <li><strong>Total Trades Executed:</strong> {len(trades)}</li>
-            <li><strong>Initial Starting Cash:</strong> ${initial_cash:,.2f}</li>
-            <li><strong>Final Balance:</strong> ${final_balance:,.2f}</li>
-            <li><strong>Net Profit / Loss:</strong> ${profit_usd:,.2f} ({profit_pct:.2f}%)</li>
-            <li><strong>Buy-and-Hold PnL:</strong> ${bah_profit:,.2f}</li>
+            <li><strong>Total Trades Executed:</strong> TRADES_COUNT</li>
+            <li><strong>Initial Starting Cash:</strong> $INITIAL_CASH_VAL</li>
+            <li><strong>Final Balance:</strong> $FINAL_BALANCE_VAL</li>
+            <li><strong>Net Profit / Loss:</strong> $PROFIT_USD_VAL (PROFIT_PCT_VAL%)</li>
+            <li><strong>Buy-and-Hold PnL:</strong> $BAH_PROFIT_VAL</li>
         </ul>
     </div>
 
     <div class="card">
         <h2>Detailed Trade Log</h2>
-        <pre>{trades_log_text}</pre>
+        <pre>TRADES_LOG_VAL</pre>
     </div>
 </body>
 </html>
 """
+
+    html_content = html_template.replace("TIMESTAMP_VAL", timestamp_str) \
+                                .replace("TRADES_COUNT", str(len(trades))) \
+                                .replace("INITIAL_CASH_VAL", f"{initial_cash:,.2f}") \
+                                .replace("FINAL_BALANCE_VAL", f"{final_balance:,.2f}") \
+                                .replace("PROFIT_USD_VAL", f"{profit_usd:,.2f}") \
+                                .replace("PROFIT_PCT_VAL", f"{profit_pct:.2f}") \
+                                .replace("BAH_PROFIT_VAL", f"{bah_profit:,.2f}") \
+                                .replace("TRADES_LOG_VAL", trades_log_text)
+
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("\n[INFO] index.html generated successfully alongside README.md!")
+    print("\n[INFO] index.html generated successfully!")
+
+    # --- Automatikus megnyitás futás közben ---
+    html_path = os.path.abspath("index.html")
+    webbrowser.open(f"file://{html_path}")
+    print("[INFO] index.html opened automatically in your default browser!")
 
 def run_bot():
     print("Fetching 24-hour market data from Binance API...")
