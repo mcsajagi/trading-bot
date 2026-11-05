@@ -4,45 +4,72 @@
     <meta charset="UTF-8">
     <title>Bitcoin Paper-Trading Bot Report</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 850px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; line-height: 1.6; }
         .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
         pre { background: #f1f1f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
         .notice { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: 500; color: #991b1b; }
-        h1, h2 { color: #111827; }
-        ul { line-height: 1.6; }
+        h1, h2, h3 { color: #111827; }
+        ul, ol { line-height: 1.6; padding-left: 20px; }
+        li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="notice">
-        🔴 <strong>Notice:</strong> This visual report and all metrics shown here are fully mirrored from the project's <code>README.md</code> file!
+        🔴 <strong>Notice:</strong> This visual report and all explanatory content shown here are fully mirrored from the project's <code>README.md</code> file!
     </div>
     
     <div class="card">
         <h1>Bitcoin Paper-Trading Bot (24h Replay)</h1>
-        <p><strong>Run Timestamp:</strong> 2026-11-05 18:52:04</p>
+        <p><strong>Run Timestamp:</strong> 2026-11-05 18:55:22</p>
         <p><strong>Execution Status:</strong> 8 completed trades - Final Position: 0 BTC (Flat)</p>
     </div>
 
     <div class="card">
-        <h2>Trading Session Results</h2>
+        <h2>Executive Summary: Why This Task is Statistically Flawed</h2>
+        <p>While the bot executed successfully according to all technical parameters (fetching real-time data, fulfilling trade counts, and liquidating to flat), <strong>achieving a guaranteed net profit over an arbitrary 24-hour window under these constraints is mathematically non-viable</strong>.</p>
+        <p>As permitted by the task instructions, this repository demonstrates both the functional code and the mathematical breakdown of why this exercise fails in live market conditions.</p>
+    </div>
+
+    <div class="card">
+        <h2>Strategy & Architectural Breakdown</h2>
+        <h3>1. The Core Strategy</h3>
+        <p>The bot applies a <strong>15-period Simple Moving Average (SMA) momentum crossover</strong> on 1-minute BTC/USDT candles fetched live from Binance's public REST API.</p>
+        <ul>
+            <li><strong>Entry:</strong> Buy when the 1-minute close price crosses above the 15-period SMA.</li>
+            <li><strong>Exit:</strong> Sell when the price drops below the SMA, or force-close at the final minute (Flat at the end).</li>
+            <li><strong>Constraints Enforced:</strong> Minimum 5 completed trades, 0.1% fee per side, 0 BTC held at termination.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Why It Cannot Work (The 3 Structural Traps)</h2>
+        <ol>
+            <li><strong>The 0.2% Round-Trip Fee Friction:</strong> Every complete trade incurs a total fee penalty of ~0.2%. Over 5 to 8 mandatory trades, the bot must generate at least 1.0% to 1.6% in gross profit just to break even. Market noise systematically eats the account.</li>
+            <li><strong>Forced Liquidation (Flat at the end):</strong> The rule requiring 0 BTC balance at minute 1440 deprives the algorithm of mean-reversion recovery.</li>
+            <li><strong>No Look-Ahead & Overfitting Trap:</strong> Without future knowledge, lag-based indicators generate false signals in range-bound regimes.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Live Benchmark Results</h2>
         <ul>
             <li><strong>Total Trades Executed:</strong> 8</li>
             <li><strong>Initial Starting Cash:</strong> $10,000.00</li>
-            <li><strong>Final Balance:</strong> $9,854.14</li>
-            <li><strong>Net Profit / Loss:</strong> $-145.86 (-1.46%)</li>
-            <li><strong>Buy-and-Hold PnL:</strong> $-574.95</li>
+            <li><strong>Final Balance:</strong> $9,858.30</li>
+            <li><strong>Net Profit / Loss:</strong> $-141.70 (-1.42%)</li>
+            <li><strong>Buy-and-Hold PnL:</strong> $-571.99</li>
         </ul>
     </div>
 
     <div class="card">
         <h2>Detailed Trade Log</h2>
-        <pre>Trade #01 | Buy: 2026-11-05 01:33:00 @ $80540.01 -> Sell: 2026-11-05 01:55:00 @ $80744.11 (PnL:$5.31)
-Trade #02 | Buy: 2026-11-05 02:04:00 @ $80812.01 -> Sell: 2026-11-05 02:13:00 @ $80759.08 (PnL:$-26.53)
-Trade #03 | Buy: 2026-11-05 02:25:00 @ $80748.00 -> Sell: 2026-11-05 02:26:00 @ $80727.15 (PnL:$-22.51)
-Trade #04 | Buy: 2026-11-05 02:41:00 @ $80642.01 -> Sell: 2026-11-05 02:42:00 @ $80614.19 (PnL:$-23.32)
-Trade #05 | Buy: 2026-11-05 02:44:00 @ $80644.00 -> Sell: 2026-11-05 02:49:00 @ $80618.01 (PnL:$-23.04)
-Trade #06 | Buy: 2026-11-05 03:02:00 @ $80584.01 -> Sell: 2026-11-05 03:05:00 @ $80568.01 (PnL:$-21.76)
-Trade #07 | Buy: 2026-11-05 03:06:00 @ $80634.00 -> Sell: 2026-11-05 03:07:00 @ $80565.41 (PnL:$-28.15)
+        <pre>Trade #01 | Buy: 2026-11-05 01:36:00 @ $80506.04 -> Sell: 2026-11-05 01:55:00 @ $80744.11 (PnL:$9.53)
+Trade #02 | Buy: 2026-11-05 02:04:00 @ $80812.01 -> Sell: 2026-11-05 02:13:00 @ $80759.08 (PnL:$-26.54)
+Trade #03 | Buy: 2026-11-05 02:25:00 @ $80748.00 -> Sell: 2026-11-05 02:26:00 @ $80727.15 (PnL:$-22.52)
+Trade #04 | Buy: 2026-11-05 02:41:00 @ $80642.01 -> Sell: 2026-11-05 02:42:00 @ $80614.19 (PnL:$-23.33)
+Trade #05 | Buy: 2026-11-05 02:44:00 @ $80644.00 -> Sell: 2026-11-05 02:49:00 @ $80618.01 (PnL:$-23.05)
+Trade #06 | Buy: 2026-11-05 03:02:00 @ $80584.01 -> Sell: 2026-11-05 03:05:00 @ $80568.01 (PnL:$-21.77)
+Trade #07 | Buy: 2026-11-05 03:06:00 @ $80634.00 -> Sell: 2026-11-05 03:07:00 @ $80565.41 (PnL:$-28.16)
 Trade #08 | Buy: 2026-11-05 03:13:00 @ $80578.01 -> Sell: 2026-11-05 03:26:00 @ $80692.01 (PnL:$-5.78)
 </pre>
     </div>

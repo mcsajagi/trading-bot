@@ -114,24 +114,25 @@ python bot.py
         f.write(readme_content)
     print("\n[INFO] README.md generated successfully!")
 
-    # --- HTML generation (with red alert banner and English text) ---
+    # --- HTML generation with full explanation & red warning banner ---
     html_template = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Bitcoin Paper-Trading Bot Report</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 850px; margin: 40px auto; padding: 20px; background: #f9f9fb; color: #333; line-height: 1.6; }
         .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
         pre { background: #f1f1f5; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
         .notice { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-weight: 500; color: #991b1b; }
-        h1, h2 { color: #111827; }
-        ul { line-height: 1.6; }
+        h1, h2, h3 { color: #111827; }
+        ul, ol { line-height: 1.6; padding-left: 20px; }
+        li { margin-bottom: 8px; }
     </style>
 </head>
 <body>
     <div class="notice">
-        🔴 <strong>Notice:</strong> This visual report and all metrics shown here are fully mirrored from the project's <code>README.md</code> file!
+        🔴 <strong>Notice:</strong> This visual report and all explanatory content shown here are fully mirrored from the project's <code>README.md</code> file!
     </div>
     
     <div class="card">
@@ -141,7 +142,33 @@ python bot.py
     </div>
 
     <div class="card">
-        <h2>Trading Session Results</h2>
+        <h2>Executive Summary: Why This Task is Statistically Flawed</h2>
+        <p>While the bot executed successfully according to all technical parameters (fetching real-time data, fulfilling trade counts, and liquidating to flat), <strong>achieving a guaranteed net profit over an arbitrary 24-hour window under these constraints is mathematically non-viable</strong>.</p>
+        <p>As permitted by the task instructions, this repository demonstrates both the functional code and the mathematical breakdown of why this exercise fails in live market conditions.</p>
+    </div>
+
+    <div class="card">
+        <h2>Strategy & Architectural Breakdown</h2>
+        <h3>1. The Core Strategy</h3>
+        <p>The bot applies a <strong>15-period Simple Moving Average (SMA) momentum crossover</strong> on 1-minute BTC/USDT candles fetched live from Binance's public REST API.</p>
+        <ul>
+            <li><strong>Entry:</strong> Buy when the 1-minute close price crosses above the 15-period SMA.</li>
+            <li><strong>Exit:</strong> Sell when the price drops below the SMA, or force-close at the final minute (Flat at the end).</li>
+            <li><strong>Constraints Enforced:</strong> Minimum 5 completed trades, 0.1% fee per side, 0 BTC held at termination.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>Why It Cannot Work (The 3 Structural Traps)</h2>
+        <ol>
+            <li><strong>The 0.2% Round-Trip Fee Friction:</strong> Every complete trade incurs a total fee penalty of ~0.2%. Over 5 to 8 mandatory trades, the bot must generate at least 1.0% to 1.6% in gross profit just to break even. Market noise systematically eats the account.</li>
+            <li><strong>Forced Liquidation (Flat at the end):</strong> The rule requiring 0 BTC balance at minute 1440 deprives the algorithm of mean-reversion recovery.</li>
+            <li><strong>No Look-Ahead & Overfitting Trap:</strong> Without future knowledge, lag-based indicators generate false signals in range-bound regimes.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>Live Benchmark Results</h2>
         <ul>
             <li><strong>Total Trades Executed:</strong> TRADES_COUNT</li>
             <li><strong>Initial Starting Cash:</strong> $INITIAL_CASH_VAL</li>
@@ -170,7 +197,7 @@ python bot.py
 
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
-    print("\n[INFO] index.html generated successfully!")
+    print("\n[INFO] index.html generated successfully with full explanation!")
 
     # --- Auto-open in browser ---
     html_path = os.path.abspath("index.html")
